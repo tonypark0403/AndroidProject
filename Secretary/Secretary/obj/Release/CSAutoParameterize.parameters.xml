@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="SecretaryContext-Web.config Connection String" description="SecretaryContext Connection String used in web.config by the application to access the database." defaultValue="SecretaryContext_ConnectionString" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="D:\\Study\\Dropbox\\Visual\ Studio\ 2015\\Projects\\Secretary\\Secretary\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='SecretaryContext']/@connectionString" />
+  </parameter>
+</parameters>

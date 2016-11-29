@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        applicationId "ca.seneca.map524.smartsecretary"
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        // Enabling multidex support
+        multiDexEnabled true
+        dexOptions {
+            javaMaxHeapSize "2g" //specify the heap size for the dex process
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile files('libs/huelocalsdk.jar')
+    compile files('libs/huesdkresources.jar')
+    compile 'com.google.android.gms:play-services:9.2.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.9.0'
+    compile 'com.github.alamkanak:android-week-view:1.2.6'
+}

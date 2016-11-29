@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="station_list">
+        <item>York University</item>
+        <item>Finch Station</item>
+        <!--<item>Downsview Station</item>-->
+        <!--<item>Dundas Station</item>-->
+    </string-array>
+</resources>
