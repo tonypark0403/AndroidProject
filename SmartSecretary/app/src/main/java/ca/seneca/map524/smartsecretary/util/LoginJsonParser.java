@@ -23,7 +23,7 @@ public class LoginJsonParser {
         // We use only the first value
         for(int i = 0; i < jArr.length(); i++){
             JSONLogin = jArr.getJSONObject(i);
-            login.add(new Login(JSONLogin.getString("FirstName"), JSONLogin.getString("Password")));
+            login.add(new Login(JSONLogin.getString("UserName"), JSONLogin.getString("Password"), JSONLogin.getString("Role")));
         }
         return login;
     }

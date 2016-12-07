@@ -1,7 +1,8 @@
 package ca.seneca.map524.smartsecretary;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -15,7 +16,7 @@ import ca.seneca.map524.smartsecretary.fragment.LoginFragment;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends Activity {
 
     LoginFragment mloginFragment = null;
 
@@ -24,7 +25,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //FacebookSdk.sdkInitialize(getApplicationContext());
+        // set landscape screen
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         if (mloginFragment == null) {
             mloginFragment = new LoginFragment();

@@ -10,13 +10,15 @@ import android.os.Parcelable;
 public class Login implements Parcelable {
     private String id;
     private String password;
+    private String role;
 
     public Login() {
     }
 
-    public Login(String id, String password) {
+    public Login(String id, String password, String role) {
         this.id = id;
         this.password = password;
+        this.role = role;
     }
 
     @Override
@@ -28,6 +30,7 @@ public class Login implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(password);
+        dest.writeString(role);
     }
 
     Parcelable.Creator<Login> CREATOR = new Creator<Login>() {
@@ -60,5 +63,13 @@ public class Login implements Parcelable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

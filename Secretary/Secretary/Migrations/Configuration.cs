@@ -30,12 +30,11 @@ namespace Secretary.Migrations
             //
             context.Users.AddOrUpdate(
                 p => p.FirstName,
-                new User() { UserId = 1, FirstName = "Wonho", LastName = "Lee", Password = "test123", Role = Role.ADMIN },
-                new User() { UserId = 2, FirstName = "Tony", LastName = "Park", Password = "test123", Role = Role.USER }
+                new User() { FirstName = "Wonho", LastName = "Lee", Password = "test123", Role = Role.ADMIN },
+                new User() { FirstName = "Tony", LastName = "Park", Password = "test123", Role = Role.USER }
             );
 
             context.Subjects.AddOrUpdate(
-                p => p.Code,
                 new Subject
                 {
                     UserId = 1,
@@ -53,7 +52,7 @@ namespace Secretary.Migrations
                     UserId = 1,
                     Code = "MAP524",
                     Room = "T3074",
-                    Day = 3,
+                    Day = 5,
                     StartHour = 15,
                     StartMin = 20,
                     EndHour = 17,
@@ -125,7 +124,7 @@ namespace Secretary.Migrations
                     UserId = 1,
                     Code = "GAM537",
                     Room = "T2108",
-                    Day = 3,
+                    Day = 4,
                     StartHour = 15,
                     StartMin = 20,
                     EndHour = 17,
@@ -140,8 +139,8 @@ namespace Secretary.Migrations
                     Day = 2,
                     StartHour = 9,
                     StartMin = 50,
-                    EndHour = 11,
-                    EndMin = 35,
+                    EndHour = 10,
+                    EndMin = 45,
                     Color = 1
                 },
                 new Subject
@@ -173,42 +172,42 @@ namespace Secretary.Migrations
                     UserId = 2,
                     Code = "SYS366",
                     Room = "S2156",
-                    Day = 2,
-                    StartHour = 11,
-                    StartMin = 40,
-                    EndHour = 13,
-                    EndMin = 25,
-                    Color = 2
-                },
-                new Subject()
-                {
-                    UserId = 1,
-                    Code = "SYS466",
-                    Room = "T3076",
-                    Day = 4,
-                    StartHour = 11,
-                    StartMin = 40,
-                    EndHour = 13,
-                    EndMin = 25,
-                    Color = 2
-                },
-                new Subject()
-                {
-                    UserId = 1,
-                    Code = "INT422",
-                    Room = "S2123",
                     Day = 3,
-                    StartHour = 13,
-                    StartMin = 30,
-                    EndHour = 15,
-                    EndMin = 15,
+                    StartHour = 08,
+                    StartMin = 00,
+                    EndHour = 09,
+                    EndMin = 45,
+                    Color = 2
+                },
+                new Subject()
+                {
+                    UserId = 2,
+                    Code = "SYS366",
+                    Room = "T2108",
+                    Day = 6,
+                    StartHour = 11,
+                    StartMin = 40,
+                    EndHour = 13,
+                    EndMin = 25,
+                    Color = 2
+                },
+                new Subject()
+                {
+                    UserId = 2,
+                    Code = "DCN455",
+                    Room = "T3076",
+                    Day = 3,
+                    StartHour = 09,
+                    StartMin = 50,
+                    EndHour = 11,
+                    EndMin = 35,
                     Color = 4
                 },
                 new Subject()
                 {
-                    UserId = 1,
-                    Code = "INT422",
-                    Room = "T3073",
+                    UserId = 2,
+                    Code = "DCN455",
+                    Room = "T4040",
                     Day = 5,
                     StartHour = 13,
                     StartMin = 30,
@@ -218,26 +217,14 @@ namespace Secretary.Migrations
                 },
                 new Subject()
                 {
-                    UserId = 1,
-                    Code = "GAM537",
+                    UserId = 2,
+                    Code = "JAC444",
                     Room = "T2108",
                     Day = 2,
-                    StartHour = 15,
-                    StartMin = 20,
-                    EndHour = 17,
-                    EndMin = 5,
-                    Color = 3
-                },
-                new Subject()
-                {
-                    UserId = 1,
-                    Code = "GAM537",
-                    Room = "T2108",
-                    Day = 3,
-                    StartHour = 15,
-                    StartMin = 20,
-                    EndHour = 17,
-                    EndMin = 5,
+                    StartHour = 08,
+                    StartMin = 00,
+                    EndHour = 09,
+                    EndMin = 45,
                     Color = 3
                 }
             );

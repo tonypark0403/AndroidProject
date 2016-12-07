@@ -63,7 +63,7 @@ public class PHHomeActivity extends Activity implements AdapterView.OnItemClickL
         String lastUsername    = prefs.getUsername();
 
         // Automatically try to connect to the last connected IP Address.  For multiple bridge support a different implementation is required.
-        if (lastIpAddress !=null && !lastIpAddress.equals("")) {
+        /*if (lastIpAddress !=null && !lastIpAddress.equals("")) {
             PHAccessPoint lastAccessPoint = new PHAccessPoint();
             lastAccessPoint.setIpAddress(lastIpAddress);
             lastAccessPoint.setUsername(lastUsername);
@@ -73,7 +73,7 @@ public class PHHomeActivity extends Activity implements AdapterView.OnItemClickL
                 phHueSDK.connect(lastAccessPoint);
             }
         }
-        else {  // First time use, so perform a bridge search.
+        else*/ {  // First time use, so perform a bridge search.
             doBridgeSearch();
         }
     }
@@ -227,10 +227,11 @@ public class PHHomeActivity extends Activity implements AdapterView.OnItemClickL
     // Starting the main activity this way, prevents the PushLink Activity being shown when pressing the back button.
     public void startMainActivity() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        /*intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            intent.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK which is only available from API level 11
+            intent.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK which is only available from API level 11*/
         startActivity(intent);
+        //finish();
     }
 }

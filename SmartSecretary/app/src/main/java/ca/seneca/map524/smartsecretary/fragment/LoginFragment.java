@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -50,15 +51,22 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class LoginFragment extends Fragment {
 
     private final static String TAG = "LoginFragment";
-    private final static String LOGIN_URL = "http://secretary.azurewebsites.net/api/User/";
+    private final static String LOGIN_URL = "http://secretary.azurewebsites.net/api/Users";
     public static List<Login> mLoginList;
     View mRootView;
     RegisterFragment mRegisterFragment;
 
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;// = pref.edit();
+
     Button loginButton, regiButton;
     EditText idInput, passwordInput;
     CheckBox autoLogin;
-    String id, password;
+    boolean loginChecked = false;
+    boolean validation = false;
+    public static String id;
+    String password;
+    final String ADMIN = "0";
 
     //Facebook
     private CallbackManager callbackManager;
@@ -74,9 +82,10 @@ public class LoginFragment extends Fragment {
         FacebookSdk.sdkInitialize(inflater.getContext().getApplicationContext());
 
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
+        pref = mRootView.getContext().getSharedPreferences("Login", Context.MODE_PRIVATE);
+        editor = pref.edit();
 
         regiButton = (Button)mRootView.findViewById(R.id.register);
-
         regiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,27 +101,33 @@ public class LoginFragment extends Fragment {
         autoLogin = (CheckBox) mRootView.findViewById(R.id.checkBox);
         loginButton = (Button) mRootView.findViewById(R.id.btn_Login);
 
-        SharedPreferences pref = mRootView.getContext().getSharedPreferences("Login", Context.MODE_PRIVATE);
-        if (pref.getBoolean("autoLogin", true)){
+        if (pref != null && pref.getBoolean("autoLogin", true)) {
             autoLogin.setChecked(true);
-            idInput.setText(pref.getString("id",""));
-            passwordInput.setText(pref.getString("pw",""));
+            idInput.setText(pref.getString("id", ""));
+            passwordInput.setText(pref.getString("pw", ""));
         }
-        final SharedPreferences check = pref;
 
-        if(pref.getBoolean("autoLogin", false)) {
-            idInput.setText(pref.getString("id",""));
-            passwordInput.setText(pref.getString("pw",""));
-            autoLogin.setChecked(true);
-        }
+        autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    loginChecked = true;
+                } else {
+                    // if unChecked, removeAll
+                    loginChecked = false;
+                    autoLogin.setChecked(false);
+                    editor.clear();
+                    editor.commit();
+                }
+            }
+        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = check.edit();
                 boolean validation = false;
                 if(autoLogin.isChecked()){
-                    Toast.makeText(mRootView.getContext(), "Auto Login", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(mRootView.getContext(), "Auto Login", Toast.LENGTH_SHORT).show();
                     editor.putString("id", idInput.getText().toString());
                     editor.putString("pw", passwordInput.getText().toString());
                     editor.putBoolean("autoLogin", true);
@@ -122,20 +137,33 @@ public class LoginFragment extends Fragment {
                 if(mLoginList.size() > 0) {
                     id = idInput.getText().toString();
                     password = passwordInput.getText().toString();
+                    //                if(loginChecked) {
+                    //                    if (pref.getString("id", "").equals(id) && pref.getString("pw", "").equals(password)) {
+                    //                        Toast.makeText(mRootView.getContext(), "Login Success", Toast.LENGTH_SHORT).show();
+                    //                        startActivity(new Intent(mRootView.getContext(), MainActivity.class));
+                    //                    }
+                    //                }else {
                     validation = loginValidation(id, password);
                     if(!validation){
-                        Toast.makeText(mRootView.getContext(), "Login Failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mRootView.getContext(), "Login Failed", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(mRootView.getContext(), "Login Success", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(mRootView.getContext(), "Login Success", Toast.LENGTH_SHORT).show();
+                        if(loginChecked){
+                            editor.putString("id", idInput.getText().toString());
+                            editor.putString("pw", passwordInput.getText().toString());
+                            editor.putBoolean("autoLogin", true);
+                            editor.commit();
+                        }
+                        //Toast.makeText(mRootView.getContext(), "Login Success", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(mRootView.getContext(), MainActivity.class));
                     }
+                    //                }
                 } else {
-                    Toast.makeText(mRootView.getContext(), "XML data failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mRootView.getContext(), "XML data failed", Toast.LENGTH_SHORT).show();
                     //startActivity(new Intent(mRootView.getContext(), LoginActivity.class));
                 }
             }
         });
-
 
         // set Facebook login callback
         callbackManager = CallbackManager.Factory.create();
@@ -165,6 +193,9 @@ public class LoginFragment extends Fragment {
                 parameters.putString("fields", "id,name,email,gender,birthday");
                 graphRequest.setParameters(parameters);
                 graphRequest.executeAsync();
+
+                // login with Facebook
+                startActivity(new Intent(mRootView.getContext(), MainActivity.class));
             }
 
             @Override
@@ -193,24 +224,14 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        // auto login with Facebook login
+        if (AccessToken.getCurrentAccessToken() != null) {
+            startActivity(new Intent(mRootView.getContext(), MainActivity.class));
+        }
+
         // set Facebook login button background
         setFacebookLoginButton();
 
-
-        // Get KeyHash
-        // UJ3EpfOa+rokjjmuGzHtCe2ntxs=
-        /*try {
-            PackageInfo info = getActivity().getPackageManager().getPackageInfo("ca.seneca.map524.smartsecretary", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash: ", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d("KeyHash: ", "name not found");
-        } catch (NoSuchAlgorithmException e) {
-            Log.d("KeyHash: ", "no such");
-        }*/
 
         return mRootView;
     }
@@ -229,16 +250,19 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean loginValidation(String id, String password) {
-        if (id.equals(mLoginList.get(0).getId()) && password.equals(mLoginList.get(0).getPassword())) {
-            Toast.makeText(mRootView.getContext(), "Admin Log in successfully", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id.equals(mLoginList.get(1).getId()) && password.equals(mLoginList.get(1).getPassword())) {
-            Toast.makeText(mRootView.getContext(), "User Log in successfully", Toast.LENGTH_SHORT).show();
-            return true;
-        } else {
-            Toast.makeText(mRootView.getContext(), "Login failed", Toast.LENGTH_SHORT).show();
-            return false;
+        for (int i = 0; i < mLoginList.size(); i++) {
+            if (id.equals(mLoginList.get(i).getId()) && password.equals(mLoginList.get(i).getPassword())) {
+                if (mLoginList.get(i).getRole().equals(ADMIN)) {
+                    //Toast.makeText(mRootView.getContext(), "Admin Log in successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Toast.makeText(mRootView.getContext(), "User Log in successfully", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
         }
+
+        Toast.makeText(mRootView.getContext(), "Login failed", Toast.LENGTH_SHORT).show();
+        return false;
     }
 
     public class LoginTask extends AsyncTask<String, Void, List<Login>> {
@@ -264,7 +288,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    //Facebook
+        //Facebook
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);

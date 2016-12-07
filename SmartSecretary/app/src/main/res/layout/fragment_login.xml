@@ -18,8 +18,8 @@
         android:id="@+id/et_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/textView2"
+        android:layout_alignLeft="@+id/textViewAccount"
+        android:layout_below="@+id/textViewAccount"
         android:layout_marginTop="16dp" android:ems="10" >
         <requestFocus />
     </EditText>
@@ -28,17 +28,17 @@
         android:id="@+id/et_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_below="@+id/textView3"
+        android:layout_alignLeft="@+id/lastName"
+        android:layout_below="@+id/lastName"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="textPassword" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/lastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView2"
+        android:layout_alignRight="@+id/textViewAccount"
         android:layout_below="@+id/et_username"
         android:layout_marginTop="20dp"
         android:text="@string/password"
@@ -61,7 +61,7 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textViewAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"

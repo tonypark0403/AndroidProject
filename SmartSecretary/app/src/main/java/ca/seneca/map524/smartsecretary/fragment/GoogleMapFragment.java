@@ -48,8 +48,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mLocation = bundle.getString("location");*/
 
         // location
+        mTextTitle = (TextView)rootView.findViewById(R.id.textTitle);
         if (mLocation != null) {
-            mTextTitle = (TextView)rootView.findViewById(R.id.textTitle);
             mTextTitle.setText(mLocation.toUpperCase());
         }
 

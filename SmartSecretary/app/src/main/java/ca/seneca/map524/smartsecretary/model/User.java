@@ -1,20 +1,31 @@
 package ca.seneca.map524.smartsecretary.model;
 
 /**
- * Created by Tony on 11/15/2016.
+ * Created by Tony on 11/29/2016.
  */
 
-public class LoginCreate {
+public class User {
+    int Id;
     String FirstName;
     String LastName;
     String Password;
-    String role;
+    String Role;
 
-    public LoginCreate(String firstName, String password) {
+    public User(){}
+    public User(int id, String firstName, String lastName, String password, String role) {
+        Id = id;
         FirstName = firstName;
         Password = password;
-        LastName = "test";
-        role = "USER";
+        LastName = lastName;
+        Role = role;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getFirstName() {
@@ -33,13 +44,29 @@ public class LoginCreate {
         Password = password;
     }
 
+    public String getLastName() {
+        return LastName;
+    }
+
+    public void setLastName(String lastName) {
+        LastName = lastName;
+    }
+
+    public String getRole() {
+        return Role;
+    }
+
+    public void setRole(String role) {
+        Role = role;
+    }
+
     @Override
     public String toString() {
         return "[{" +
                 "\"FirstName\"=\"" + FirstName + "\",\n" +
                 "\"LastName\"=\"" + LastName + "\",\n" +
                 "\"Password\"=\"" + Password + "\",\n" +
-                "\"role\"=\"" + role + "\"" +
+                "\"role\"=\"" + Role + "\"" +
                 "}]";
     }
 }

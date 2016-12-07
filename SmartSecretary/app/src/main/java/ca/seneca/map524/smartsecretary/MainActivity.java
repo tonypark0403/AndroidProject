@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,11 +40,13 @@ import ca.seneca.map524.smartsecretary.fragment.GoogleMapFragment;
 import ca.seneca.map524.smartsecretary.fragment.HomeFragment;
 import ca.seneca.map524.smartsecretary.fragment.NewsHeadlineFragment;
 import ca.seneca.map524.smartsecretary.fragment.PhotoframeFragment;
+import ca.seneca.map524.smartsecretary.fragment.SettingFragment;
 import ca.seneca.map524.smartsecretary.fragment.TTCFragment;
 import ca.seneca.map524.smartsecretary.fragment.TimetableFragment;
 import ca.seneca.map524.smartsecretary.fragment.WeatherFragment;
 import ca.seneca.map524.smartsecretary.philipshue.AccessPointListAdapter;
 import ca.seneca.map524.smartsecretary.philipshue.HueSharedPreferences;
+import ca.seneca.map524.smartsecretary.philipshue.PHHomeActivity;
 import ca.seneca.map524.smartsecretary.philipshue.PHPushlinkActivity;
 import ca.seneca.map524.smartsecretary.philipshue.PHWizardAlertDialog;
 
@@ -64,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
     CancellationFragment mCancellationFragment;
     PhotoframeFragment mPhotoframeFragment;
     GoogleMapFragment mGoogleMapFragment;
+    SettingFragment mSettingFragment;
+
+    //setting button
+    public static ArrayList<View> views;
 
     // speech
     private SpeechRecognizerManager mSpeechManager;
@@ -88,10 +95,14 @@ public class MainActivity extends AppCompatActivity {
         // hide to make fullscreen
         hide();
 
+        // set landscape screen
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         // set buttons
         setButtonListener();
 
         // connect Philips Hue
+        // this must need Philips Hue device
         //connectHue();
 
         // start listening
@@ -146,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setButtonListener() {
         // home button
-        Button buttonHome = (Button)findViewById(R.id.buttonHome);
+        Button buttonHome = (Button) findViewById(R.id.buttonHome);
         buttonHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,11 +166,14 @@ public class MainActivity extends AppCompatActivity {
                     mHomeFragment = new HomeFragment();
                 }
                 replaceFragment(mHomeFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // weather button
-        Button buttonWeather = (Button)findViewById(R.id.buttonWeather);
+        Button buttonWeather = (Button) findViewById(R.id.buttonWeather);
         buttonWeather.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -168,11 +182,14 @@ public class MainActivity extends AppCompatActivity {
                     mWeatherFragment = new WeatherFragment();
                 }
                 replaceFragment(mWeatherFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // TTC button
-        Button buttonTTC = (Button)findViewById(R.id.buttonTTC);
+        Button buttonTTC = (Button) findViewById(R.id.buttonTTC);
         buttonTTC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,11 +197,14 @@ public class MainActivity extends AppCompatActivity {
                 mTTCFragment = new TTCFragment();
                 mTTCFragment.setBusStop("york university");
                 replaceFragment(mTTCFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // News button
-        Button buttonNews = (Button)findViewById(R.id.buttonNews);
+        Button buttonNews = (Button) findViewById(R.id.buttonNews);
         buttonNews.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,11 +213,14 @@ public class MainActivity extends AppCompatActivity {
                     mNewsHeadlineFragment = new NewsHeadlineFragment();
                 }
                 replaceFragment(mNewsHeadlineFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // Timetable button
-        Button buttonTimetable = (Button)findViewById(R.id.buttonTimetable);
+        Button buttonTimetable = (Button) findViewById(R.id.buttonTimetable);
         buttonTimetable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,12 +228,16 @@ public class MainActivity extends AppCompatActivity {
                 if (mTimetableFragment == null) {
                     mTimetableFragment = new TimetableFragment();
                 }
+
                 replaceFragment(mTimetableFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // Class cancellation button
-        Button buttonCancellation = (Button)findViewById(R.id.buttonCancelation);
+        Button buttonCancellation = (Button) findViewById(R.id.buttonCancelation);
         buttonCancellation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,11 +246,14 @@ public class MainActivity extends AppCompatActivity {
                     mCancellationFragment = new CancellationFragment();
                 }
                 replaceFragment(mCancellationFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // Digital photo frame button
-        Button buttonPhotoframe = (Button)findViewById(R.id.buttonPhotoframe);
+        Button buttonPhotoframe = (Button) findViewById(R.id.buttonPhotoframe);
         buttonPhotoframe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -232,11 +262,14 @@ public class MainActivity extends AppCompatActivity {
                     mPhotoframeFragment = new PhotoframeFragment();
                 }
                 replaceFragment(mPhotoframeFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
         // map button
-        Button buttonMap = (Button)findViewById(R.id.buttonMap);
+        Button buttonMap = (Button) findViewById(R.id.buttonMap);
         buttonMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -246,96 +279,122 @@ public class MainActivity extends AppCompatActivity {
                 mGoogleMapFragment.setArguments(bundle);*/
                 mGoogleMapFragment.setLocation("toronto");
                 replaceFragment(mGoogleMapFragment);
+
+                // restart speech listner
+                startListening();
             }
         });
 
 
         // Hue fragment (will be moved to settings Activity)
-        /*Button buttonHue = (Button)findViewById(R.id.buttonHue);
+        Button buttonHue = (Button) findViewById(R.id.buttonHue);
         buttonHue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Hue clicked", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(getApplicationContext(), PHHomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                /*intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                    intent.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK which is only available from API level 11
-                startActivity(intent);
-                //connectHue();
+                    intent.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK which is only available from API level 11*/
+                startActivityForResult(intent, 0);
             }
-        });*/
+        });
 
-        Button buttonOn = (Button)findViewById(R.id.buttonOn);
+        Button buttonOn = (Button) findViewById(R.id.buttonOn);
         buttonOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onOffLights(true);
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonOff = (Button)findViewById(R.id.buttonOff);
+        Button buttonOff = (Button) findViewById(R.id.buttonOff);
         buttonOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onOffLights(false);
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonWhite = (Button)findViewById(R.id.buttonWhite);
+        Button buttonWhite = (Button) findViewById(R.id.buttonWhite);
         buttonWhite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("White");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonPink = (Button)findViewById(R.id.buttonPink);
+        Button buttonPink = (Button) findViewById(R.id.buttonPink);
         buttonPink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("Pink");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonRed = (Button)findViewById(R.id.buttonRed);
+        Button buttonRed = (Button) findViewById(R.id.buttonRed);
         buttonRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("Red");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonGreen = (Button)findViewById(R.id.buttonGreen);
+        Button buttonGreen = (Button) findViewById(R.id.buttonGreen);
         buttonGreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("Green");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonBlue = (Button)findViewById(R.id.buttonBlue);
+        Button buttonBlue = (Button) findViewById(R.id.buttonBlue);
         buttonBlue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("Blue");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        Button buttonYellow = (Button)findViewById(R.id.buttonYellow);
+        Button buttonYellow = (Button) findViewById(R.id.buttonYellow);
         buttonYellow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeColorLights("Yellow");
+
+                // restart speech listner
+                startListening();
             }
         });
 
-        mTextSpeech = (TextView)findViewById(R.id.textSpeech);
+        mTextSpeech = (TextView) findViewById(R.id.textSpeech);
 
         // test code
-        /*ArrayList<View> views = new ArrayList<View>();
-        views.add(buttonHome);
+        views = new ArrayList<View>();
+        /*views.add(buttonHome);
         views.add(buttonWeather);
         views.add(buttonMap);
         views.add(buttonTTC);
@@ -343,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
         views.add(buttonTimetable);
         views.add(buttonCancellation);
         views.add(buttonPhotoframe);
+        views.add(mTextSpeech);*/
         views.add(buttonOn);
         views.add(buttonOff);
         views.add(buttonWhite);
@@ -351,15 +411,24 @@ public class MainActivity extends AppCompatActivity {
         views.add(buttonGreen);
         views.add(buttonBlue);
         views.add(buttonYellow);
-        views.add(mTextSpeech);
+        views.add(buttonHue);
         for (int i = 0; i < views.size(); i++) {
-            //views.get(i).getLayoutParams().height = 1;
             views.get(i).setVisibility(View.INVISIBLE);
-        }*/
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0) {
+            hide();
+        }
     }
 
     /**
      * add a fragment
+     *
      * @param fragment
      */
     private void addFragment(Fragment fragment) {
@@ -369,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * replace a fragment
+     *
      * @param fragment
      */
     private void replaceFragment(Fragment fragment) {
@@ -404,22 +474,18 @@ public class MainActivity extends AppCompatActivity {
     /**
      * set speech listener for voice control
      */
-    private void SetSpeechListener()
-    {
+    private void SetSpeechListener() {
         mSpeechManager = new SpeechRecognizerManager(this, new SpeechRecognizerManager.onResultsReady() {
             @Override
             public void onResults(ArrayList<String> results) {
 
-                if(results != null && results.size() > 0)
-                {
-                    if(results.size()==1)
-                    {
+                if (results != null && results.size() > 0) {
+                    if (results.size() == 1) {
                         mSpeechManager.destroy();
                         mSpeechManager = null;
                         //mTextView.setText(results.get(0));
                         Log.d(TAG, results.get(0));
-                    }
-                    else {
+                    } else {
                         StringBuilder sb = new StringBuilder();
                         if (results.size() > 5) {
                             results = (ArrayList<String>) results.subList(0, 5);
@@ -432,8 +498,7 @@ public class MainActivity extends AppCompatActivity {
 
                         checkCommand(results);
                     }
-                }
-                else {
+                } else {
                     //mTextView.setText(getString(R.string.no_results_found));
                     //Log.d(TAG, getString(R.string.no_results_found));
                 }
@@ -443,6 +508,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * check the command what we say
+     *
      * @param results
      */
     private void checkCommand(ArrayList<String> results) {
@@ -452,11 +518,11 @@ public class MainActivity extends AppCompatActivity {
         for (String result : results) {
             String command = result.toLowerCase().trim();
 
-            if (command.contains("show me the map")) {
+            if (command.contains("show me the map") || command.contains("map")) {
                 // map command
                 runMapCommand(command);
                 break;
-            } else if (command.contains("show me the bus")) {
+            } else if (command.contains("show me the bus") || command.contains("bus")) {
                 // TTC command
                 runTTCCommand(command);
                 break;
@@ -471,13 +537,20 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * run the command for Google map
+     *
      * @param command
      */
     private void runMapCommand(String command) {
         mGoogleMapFragment = new GoogleMapFragment();
 
         // show me the map Toronto
-        int index = command.indexOf("show me the map") + 15;
+        int index;
+        if (command.contains("show me the map")) {
+            index = command.indexOf("show me the map") + 15;
+        } else {
+            index = command.indexOf("map") + 3;
+        }
+
         if (index < command.length()) {
             String location = command.substring(index);
             mGoogleMapFragment.setLocation(location.trim());
@@ -488,13 +561,20 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * run the command for TTC
+     *
      * @param command
      */
     private void runTTCCommand(String command) {
         mTTCFragment = new TTCFragment();
 
         // show me the but York University
-        int index = command.indexOf("show me the bus") + 15;
+        int index;
+        if (command.contains("show me the bus")) {
+            index = command.indexOf("show me the bus") + 15;
+        } else {
+            index = command.indexOf("bus") + 3;
+        }
+
         if (index < command.length()) {
             String busStop = command.substring(index);
             mTTCFragment.setBusStop(busStop.trim());
@@ -505,6 +585,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * run the command for home, weather, Philips Hue
+     *
      * @param command
      * @return
      */
@@ -537,6 +618,13 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             // cancellations
+            case "cancel":
+            case "cancellation":
+            case "cancellations":
+            case "show me cancellation":
+            case "show me the cancellation":
+            case "show me class cancellation":
+            case "show me the class cancellation":
             case "show me cancellations":
             case "show me the cancellations":
             case "show me class cancellations":
@@ -548,6 +636,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             // photo frame
+            case "show me photo":
+            case "show me the photo":
             case "show me photo frame":
             case "show me the photo frame":
                 if (mPhotoframeFragment == null) {
@@ -564,6 +654,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 replaceFragment(mNewsHeadlineFragment);
                 return true;
+            case "first":
             case "show me first news article":
             case "show me the first news article":
             case "show me first article":
@@ -574,6 +665,7 @@ public class MainActivity extends AppCompatActivity {
                     mNewsHeadlineFragment.displayNewsArticle(0);
                 }
                 return true;
+            case "second":
             case "show me second news article":
             case "show me the second news article":
             case "show me second article":
@@ -581,9 +673,10 @@ public class MainActivity extends AppCompatActivity {
             case "show me second news":
             case "show me the second news":
                 if (mNewsHeadlineFragment != null) {
-                    mNewsHeadlineFragment.displayNewsArticle(0);
+                    mNewsHeadlineFragment.displayNewsArticle(1);
                 }
                 return true;
+            case "third":
             case "show me third news article":
             case "show me the third news article":
             case "show me third article":
@@ -591,9 +684,10 @@ public class MainActivity extends AppCompatActivity {
             case "show me third news":
             case "show me the third news":
                 if (mNewsHeadlineFragment != null) {
-                    mNewsHeadlineFragment.displayNewsArticle(0);
+                    mNewsHeadlineFragment.displayNewsArticle(2);
                 }
                 return true;
+            case "fourth":
             case "show me fourth news article":
             case "show me the fourth news article":
             case "show me fourth article":
@@ -601,39 +695,47 @@ public class MainActivity extends AppCompatActivity {
             case "show me fourth news":
             case "show me the fourth news":
                 if (mNewsHeadlineFragment != null) {
-                    mNewsHeadlineFragment.displayNewsArticle(0);
+                    mNewsHeadlineFragment.displayNewsArticle(3);
                 }
                 return true;
 
             // Philips Hue
+            case "turn on":
             case "turn on light":
             case "turn on the light":
                 onOffLights(true);
                 return true;
+            case "turn off":
             case "turn off light":
             case "turn off the light":
                 onOffLights(false);
                 return true;
+            case "white":
             case "change light white":
             case "change the light white":
                 changeColorLights("White");
                 return true;
+            case "pink":
             case "change light pink":
             case "change the light pink":
                 changeColorLights("Pink");
                 return true;
+            case "red":
             case "change light red":
             case "change the light red":
                 changeColorLights("Red");
                 return true;
+            case "green":
             case "change light green":
             case "change the light green":
                 changeColorLights("Green");
                 return true;
+            case " blue":
             case "change light blue":
             case "change the light blue":
                 changeColorLights("Blue");
                 return true;
+            case "yellow":
             case "change light yellow":
             case "change the light yellow":
                 changeColorLights("Yellow");
@@ -647,17 +749,15 @@ public class MainActivity extends AppCompatActivity {
      * start listening for voice control
      */
     private void startListening() {
-        if(mSpeechManager == null)
-        {
+        if (mSpeechManager == null) {
             Log.d(TAG, "[startListening] mSpeechManager == null");
 
             SetSpeechListener();
-        }
-        else if(!mSpeechManager.ismIsListening())
-        {
+        } else if (!mSpeechManager.ismIsListening()) {
             Log.d(TAG, "[startListening] !mSpeechManager.ismIsListening()");
 
             mSpeechManager.destroy();
+            mSpeechManager = null;
             SetSpeechListener();
         }
     }
@@ -695,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
         public void onBridgeConnected(PHBridge b, String username) {
             phHueSDK.setSelectedBridge(b);
             phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
-            phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration() .getIpAddress(), System.currentTimeMillis());
+            phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration().getIpAddress(), System.currentTimeMillis());
             mHuePrefs.setLastConnectedIPAddress(b.getResourceCache().getBridgeConfiguration().getIpAddress());
             mHuePrefs.setUsername(username);
             PHWizardAlertDialog.getInstance().closeProgressDialog();
@@ -715,7 +815,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
 
             Log.v(TAG, "onConnectionResumed" + bridge.getResourceCache().getBridgeConfiguration().getIpAddress());
-            phHueSDK.getLastHeartbeat().put(bridge.getResourceCache().getBridgeConfiguration().getIpAddress(),  System.currentTimeMillis());
+            phHueSDK.getLastHeartbeat().put(bridge.getResourceCache().getBridgeConfiguration().getIpAddress(), System.currentTimeMillis());
             for (int i = 0; i < phHueSDK.getDisconnectedAccessPoint().size(); i++) {
 
                 if (phHueSDK.getDisconnectedAccessPoint().get(i).getIpAddress().equals(bridge.getResourceCache().getBridgeConfiguration().getIpAddress())) {
@@ -738,11 +838,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (code == PHHueError.NO_CONNECTION) {
                 Log.w(TAG, "On No Connection");
-            }
-            else if (code == PHHueError.AUTHENTICATION_FAILED || code== PHMessageType.PUSHLINK_AUTHENTICATION_FAILED) {
+            } else if (code == PHHueError.AUTHENTICATION_FAILED || code == PHMessageType.PUSHLINK_AUTHENTICATION_FAILED) {
                 PHWizardAlertDialog.getInstance().closeProgressDialog();
-            }
-            else if (code == PHHueError.BRIDGE_NOT_RESPONDING) {
+            } else if (code == PHHueError.BRIDGE_NOT_RESPONDING) {
                 Log.w(TAG, "Bridge Not Responding . . . ");
                 PHWizardAlertDialog.getInstance().closeProgressDialog();
                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -752,16 +850,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-            }
-            else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
+            } else if (code == PHMessageType.BRIDGE_NOT_FOUND) {
 
                 if (!lastSearchWasIPScan) {  // Perform an IP Scan (backup mechanism) if UPNP and Portal Search fails.
                     phHueSDK = PHHueSDK.getInstance();
                     PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
                     sm.search(false, false, true);
-                    lastSearchWasIPScan=true;
-                }
-                else {
+                    lastSearchWasIPScan = true;
+                } else {
                     PHWizardAlertDialog.getInstance().closeProgressDialog();
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
@@ -775,7 +871,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onParsingErrors(List<PHHueParsingError> parsingErrorsList) {
-            for (PHHueParsingError parsingError: parsingErrorsList) {
+            for (PHHueParsingError parsingError : parsingErrorsList) {
                 Log.e(TAG, "ParsingError : " + parsingError.getMessage());
             }
         }
@@ -797,8 +893,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Try to automatically connect to the last known bridge.  For first time use this will be empty so a bridge search is automatically started.
         mHuePrefs = HueSharedPreferences.getInstance(getApplicationContext());
-        String lastIpAddress   = mHuePrefs.getLastConnectedIPAddress();
-        String lastUsername    = mHuePrefs.getUsername();
+        String lastIpAddress = mHuePrefs.getLastConnectedIPAddress();
+        String lastUsername = mHuePrefs.getUsername();
 
         // Automatically try to connect to the last connected IP Address.  For multiple bridge support a different implementation is required.
         if (lastIpAddress != null && !lastIpAddress.equals("")) {
@@ -815,6 +911,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * turn on/off Philips Hue light
+     *
      * @param on
      */
     public void onOffLights(boolean on) {
@@ -835,6 +932,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * change color Philips Hue light
+     *
      * @param color
      */
     public void changeColorLights(String color) {
@@ -879,76 +977,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // disconnect Philips Hue
-        PHBridge bridge = phHueSDK.getSelectedBridge();
-        if (bridge != null) {
+        try {
+            PHBridge bridge = phHueSDK.getSelectedBridge();
+            if (bridge != null) {
 
-            if (phHueSDK.isHeartbeatEnabled(bridge)) {
-                phHueSDK.disableHeartbeat(bridge);
+                if (phHueSDK.isHeartbeatEnabled(bridge)) {
+                    phHueSDK.disableHeartbeat(bridge);
+                }
+
+                phHueSDK.disconnect(bridge);
             }
-
-            phHueSDK.disconnect(bridge);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
+
         super.onDestroy();
     }
-
-    public void onBtnNotification(View v) {
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        Intent intent = new Intent(this, MainActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        Notification.Builder builder = new Notification.Builder(this);
-//        builder.setSmallIcon(android.R.drawable.star_on);
-//        builder.setTicker("알람 간단한 설명");
-//        builder.setContentTitle("알람 제목");
-//        builder.setContentText("알람 내용");
-//        builder.setWhen(System.currentTimeMillis());
-//        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-//        builder.setContentIntent(pendingIntent);
-//        builder.setAutoCancel(true);
-//        notificationManager.notify(0, builder.build());
-
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Builder builder = new Notification.Builder(this);
-
-        // 작은 아이콘 이미지.
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-
-        // 알림이 출력될 때 상단에 나오는 문구.
-        builder.setTicker("Login Completion");
-
-        // 알림 출력 시간.
-        builder.setWhen(System.currentTimeMillis());
-
-        // 알림 제목.
-        builder.setContentTitle("User Login");
-
-        // 프로그래스 바.
-        builder.setProgress(100, 50, false);
-
-        // 알림 내용.
-        builder.setContentText("Thank you for login!");
-
-        // 알림시 사운드, 진동, 불빛을 설정 가능.
-        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS);
-
-        // 알림 터치시 반응.
-        builder.setContentIntent(pendingIntent);
-
-        // 알림 터치시 반응 후 알림 삭제 여부.
-        builder.setAutoCancel(true);
-
-        // 우선순위.
-        builder.setPriority(Notification.PRIORITY_MAX);
-
-        // 행동 최대3개 등록 가능.
-        builder.addAction(R.mipmap.ic_launcher, "Show", pendingIntent);
-        builder.addAction(R.mipmap.ic_launcher, "Hide", pendingIntent);
-        builder.addAction(R.mipmap.ic_launcher, "Remove", pendingIntent);
-
-        // 고유ID로 알림을 생성.
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(123456, builder.build());
-    }
-
 }

@@ -138,6 +138,11 @@ public class TimetableFragment extends Fragment implements WeekView.EventClickLi
 
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
+        // set monday of current week
+        Calendar monday = Calendar.getInstance();
+        monday.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        mWeekView.goToDate(monday);
+
         // Populate the week view with some events.
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
 

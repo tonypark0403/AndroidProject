@@ -32,7 +32,7 @@ public class TTCAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return ttc.getTimes().size();
+        return (ttc.getTimes() == null) ? null : ttc.getTimes().size();
     }
 
     @Override
